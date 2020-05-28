@@ -43,10 +43,6 @@ func (w worculator) calculate(wi WorkerInterface, workerHash string) int {
 	return recommendedWorkersInstances
 }
 
-var w = worculator{
-	workers: make(map[string]*workerInfo, 10),
-}
-
 func (w worculator) startWorker(wi WorkerInterface, workerHash string) {
 	instancesCount := w.workers[workerHash].instancesCount
 	go wi.Start()
@@ -63,6 +59,10 @@ func workerHash(wi WorkerInterface) string {
 	return base64.StdEncoding.EncodeToString(
 		[]byte(fmt.Sprintf("%v", wi)),
 	)
+}
+
+var w = worculator{
+	workers: make(map[string]*workerInfo),
 }
 
 func Manage(
