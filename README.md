@@ -43,7 +43,7 @@ func main() {
 	}
 
 	poolCtx, cancelPoolCtx := context.WithCancel(context.Background())
-	go pool.Manage(poolCtx, worker1)
+	go worculator.Manage(poolCtx, worker1)
 
 	c, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	go func() {

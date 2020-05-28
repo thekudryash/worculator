@@ -23,15 +23,15 @@ type workerInfo struct {
 	instancesCount int
 }
 
-type pool struct {
+type worculator struct {
 	workers map[string]*workerInfo
 }
 
-func (p pool) calculate(wi WorkerInterface, workerHash string) int {
+func (w worculator) calculate(wi WorkerInterface, workerHash string) int {
 	recommendedWorkersInstances := wi.Calculate(
 		wi.DeliveryRate(),
 		wi.AckRate(),
-		p.workers[workerHash].instancesCount,
+		w.workers[workerHash].instancesCount,
 	)
 
 	if recommendedWorkersInstances > wi.Max() {
@@ -43,20 +43,20 @@ func (p pool) calculate(wi WorkerInterface, workerHash string) int {
 	return recommendedWorkersInstances
 }
 
-var p = pool{
+var w = worculator{
 	workers: make(map[string]*workerInfo, 10),
 }
 
-func (p pool) startWorker(wi WorkerInterface, workerHash string) {
-	instancesCount := p.workers[workerHash].instancesCount
+func (w worculator) startWorker(wi WorkerInterface, workerHash string) {
+	instancesCount := w.workers[workerHash].instancesCount
 	go wi.Start()
-	p.workers[workerHash].instancesCount = instancesCount + 1
+	w.workers[workerHash].instancesCount = instancesCount + 1
 }
 
-func (p pool) stopWorker(wi WorkerInterface, workerHash string) {
-	instancesCount := p.workers[workerHash].instancesCount
+func (w worculator) stopWorker(wi WorkerInterface, workerHash string) {
+	instancesCount := w.workers[workerHash].instancesCount
 	go wi.Stop()
-	p.workers[workerHash].instancesCount = instancesCount - 1
+	w.workers[workerHash].instancesCount = instancesCount - 1
 }
 
 func workerHash(wi WorkerInterface) string {
@@ -71,8 +71,8 @@ func Manage(
 ) {
 	workerHash := workerHash(wi)
 
-	if p.workers[workerHash] == nil {
-		p.workers[workerHash] = &workerInfo{
+	if w.workers[workerHash] == nil {
+		w.workers[workerHash] = &workerInfo{
 			instancesCount: 0,
 		}
 	}
@@ -82,16 +82,16 @@ func Manage(
 	for {
 		select {
 		case <-ticker.C:
-			recommendedWorkersCount := p.calculate(wi, workerHash)
-			currentWorkersCount := p.workers[workerHash].instancesCount
+			recommendedWorkersCount := w.calculate(wi, workerHash)
+			currentWorkersCount := w.workers[workerHash].instancesCount
 
 			if currentWorkersCount <= recommendedWorkersCount {
 				for i := currentWorkersCount; i < recommendedWorkersCount; i++ {
-					p.startWorker(wi, workerHash)
+					w.startWorker(wi, workerHash)
 				}
 			} else if currentWorkersCount > recommendedWorkersCount {
 				for i := currentWorkersCount; i > recommendedWorkersCount; i-- {
-					p.stopWorker(wi, workerHash)
+					w.stopWorker(wi, workerHash)
 				}
 			}
 		case <-ctx.Done():
