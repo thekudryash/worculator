@@ -5,7 +5,6 @@
 [Licence](./LICENSE)
 
 ## TODO
-- [ ] Auto-grow workers storage
 - [ ] Tests for pool
 - [ ] RabbitMQ adapter
 

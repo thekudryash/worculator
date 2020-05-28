@@ -57,7 +57,7 @@ func (w worculator) stopWorker(wi WorkerInterface, workerHash string) {
 
 func workerHash(wi WorkerInterface) string {
 	return base64.StdEncoding.EncodeToString(
-		[]byte(fmt.Sprintf("%v", wi)),
+		[]byte(fmt.Sprintf("%v%s", wi, wi.Name())),
 	)
 }
 
