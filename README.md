@@ -1,5 +1,9 @@
 # Worculator
 
+[Code of conduct](./CODE_OF_CONDUCT.md)
+
+[Licence](./LICENSE)
+
 ## TODO
 - [ ] Auto-grow workers storage
 - [ ] Tests for pool
