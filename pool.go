@@ -8,7 +8,6 @@ import (
 )
 
 type WorkerInterface interface {
-	Context() (context.Context, context.CancelFunc)
 	Name() string
 	Min() int
 	Max() int
