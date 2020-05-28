@@ -15,7 +15,6 @@ type worker struct {
 	DefaultCalculator
 }
 
-func (w *worker) Context() (context.Context, context.CancelFunc) { return w.Ctx, w.CancelCtx }
 func (w *worker) Name() string                                   { return strconv.Itoa(rand.Int()) }
 func (w *worker) Min() int                                       { return 1 }
 func (w *worker) Max() int                                       { return 10 }
