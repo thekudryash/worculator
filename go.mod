@@ -1,4 +1,4 @@
-module github.com/workers-calculator
+module github.com/thekudryash/worculator
 
 go 1.13
 
