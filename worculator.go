@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -24,10 +25,11 @@ type workerInfo struct {
 }
 
 type worculator struct {
+	sync.Mutex
 	workers map[string]*workerInfo
 }
 
-func (w worculator) calculate(wi WorkerInterface, workerHash string) int {
+func (w *worculator) calculate(wi WorkerInterface, workerHash string) int {
 	recommendedWorkersInstances := wi.Calculate(
 		wi.DeliveryRate(),
 		wi.AckRate(),
@@ -43,13 +45,17 @@ func (w worculator) calculate(wi WorkerInterface, workerHash string) int {
 	return recommendedWorkersInstances
 }
 
-func (w worculator) startWorker(wi WorkerInterface, workerHash string) {
+func (w *worculator) startWorker(wi WorkerInterface, workerHash string) {
+	defer w.Unlock()
+	w.Lock()
 	instancesCount := w.workers[workerHash].instancesCount
 	go wi.Start()
 	w.workers[workerHash].instancesCount = instancesCount + 1
 }
 
-func (w worculator) stopWorker(wi WorkerInterface, workerHash string) {
+func (w *worculator) stopWorker(wi WorkerInterface, workerHash string) {
+	defer w.Unlock()
+	w.Lock()
 	instancesCount := w.workers[workerHash].instancesCount
 	go wi.Stop()
 	w.workers[workerHash].instancesCount = instancesCount - 1
